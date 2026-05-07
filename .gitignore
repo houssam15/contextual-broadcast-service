@@ -1,0 +1,6 @@
+.env
+.env.dev
+.env.test
+.env.prod
+node_modules/
+dist/

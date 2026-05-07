@@ -92,5 +92,6 @@ This project utilizes a **"Pass-Through"** environment variable strategy, simila
 
 ### Author
 **Houssam El Atmani**
+* [Portfolio](https://elatmani.dev)
 * [GitHub](https://github.com/houssam15)
 * [LinkedIn](https://www.linkedin.com/in/el-atmani-houssam)

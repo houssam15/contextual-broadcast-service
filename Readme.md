@@ -7,10 +7,10 @@ This service handles real-time data broadcasting with contextual awareness, util
 
 ### Key Features
 * **Real-time Communication:** Socket.io implementation with room-based broadcasting.
-* **Clean Architecture:** Separation of concerns between Domain, Application, and Infrastructure layers.
-* **Containerized:** Multi-container setup using Docker Compose.
-* **Dual-Database Strategy:** MySQL for relational data and Redis for real-time presence/caching.
-* **Environment Agnostic:** Dynamic configuration handling for Dev, Prod, and Docker environments.
+* **Clean Architecture:** Strict separation of concerns between Domain, Application, and Infrastructure layers.
+* **Containerized:** Multi-container setup managed via Docker Compose.
+* **Dual-Database Strategy:** MySQL for relational data and Redis for real-time presence tracking.
+* **Environment Agnostic:** Dynamic configuration handling designed for Dev, Prod, and Dockerized environments.
 
 ---
 
@@ -27,8 +27,16 @@ This service handles real-time data broadcasting with contextual awareness, util
 ## 🏗 Architecture
 The project follows a layered architecture to ensure maintainability and testability:
 1.  **Domain:** Core entities and repository interfaces.
-2.  **Application:** Use cases that orchestrate the flow of data.
-3.  **Infrastructure:** Implementation details (Database, Real-time server, Config).
+2.  **Application:** Use cases that orchestrate the business logic.
+3.  **Infrastructure:** External implementations (Database, Real-time server, Config loaders).
+
+---
+
+## 🐳 Docker Image
+The pre-built image is available on Docker Hub:
+```bash
+docker pull houssameli/broadcast-app:v1.0
+```
 
 ---
 
@@ -47,20 +55,17 @@ The project follows a layered architecture to ensure maintainability and testabi
     ```
 
 2.  **Configure Environment:**
-    Create a `.env` file based on the example:
+    Create a `.env` file based on the example (ensure `DB_HOST` is set to `host.docker.internal` if connecting to a database on your host machine):
     ```bash
     cp .env.example .env
     ```
-    *Update the `.env` file with your local credentials (DB host, ports, etc.).*
 
 3.  **Run with Docker:**
-    The project is configured to run in a containerized environment.
     ```bash
     docker-compose up -d --build
     ```
 
 4.  **Local Development:**
-    If running outside of Docker:
     ```bash
     npm install
     npm run dev
@@ -68,25 +73,24 @@ The project follows a layered architecture to ensure maintainability and testabi
 
 ---
 
-## 🐳 Docker Workflow
-This project utilizes a "Pass-Through" environment variable strategy, similar to the **Jitsi Meet** architecture. The `docker-compose.yml` acts as the single source of truth, injecting variables from the host's `.env` directly into the Node.js process.
+## ⚙️ Docker Workflow
+This project utilizes a **"Pass-Through"** environment variable strategy, similar to the **Jitsi Meet** architecture. The `docker-compose.yml` acts as the single source of truth, injecting variables from the host's `.env` directly into the Node.js process.
 
 ### Service Network
 * **App:** Listening on port `3000`
-* **MySQL:** Integrated via external bridge or standalone container.
-* **Redis:** Handled via internal Docker network.
+* **MySQL:** Integrated via external bridge (`host.docker.internal`) or standalone container.
+* **Redis:** Connected via internal Docker network.
 
 ---
 
 ## 📜 Scripts
 * `npm run dev`: Starts the application with `tsx` watch mode for development.
-* `npm start`: Runs the application using `tsx` (production/docker entry point).
-* `npm run build`: Compiles TypeScript to JavaScript.
+* `npm start`: Production/Docker entry point using `tsx`.
+* `npm run build`: Compiles TypeScript into the `dist` folder.
 
 ---
 
 ### Author
-**Houssam elatmani**
+**Houssam El Atmani**
 * [GitHub](https://github.com/houssam15)
-* [LinkedIn](www.linkedin.com/in/el-atmani-houssam)
-
+* [LinkedIn](https://www.linkedin.com/in/el-atmani-houssam)

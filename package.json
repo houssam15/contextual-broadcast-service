@@ -1,7 +1,7 @@
 {
-  "name": "contextual_broadcast_service",
+  "name": "@houssam15/contextual-broadcast-service",
   "version": "1.0.0",
-  "description": "",
+  "description": "Contextual broadcast service with Socket.io and Redis",
   "license": "ISC",
   "author": "",
   "type": "module",
@@ -22,5 +22,12 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/houssam15/contextual-broadcast-service.git"
   }
 }

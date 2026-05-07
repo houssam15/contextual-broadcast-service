@@ -90,6 +90,14 @@ This project utilizes a **"Pass-Through"** environment variable strategy, simila
 
 ---
 
+## 📦 Package Registry
+This project is available as a GitHub Package. You can install it as a dependency:
+```bash
+npm install @houssam15/contextual-broadcast-service
+```
+
+---
+
 ### Author
 **Houssam El Atmani**
 * [Portfolio](https://elatmani.dev)

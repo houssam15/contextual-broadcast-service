@@ -77,7 +77,14 @@ docker-compose up -d --build
 
 ```
 
+---
 
+## 🐳 Docker Image
+The pre-built image for this release is available on Docker Hub:
+[houssameli/broadcast-app:v1.1](https://hub.docker.com/r/houssameli/broadcast-app)
+
+**Pull Command:**
+`docker pull houssameli/broadcast-app:v1.1`
 
 ---
 

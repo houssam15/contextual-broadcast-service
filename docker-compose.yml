@@ -1,6 +1,6 @@
 services:
   broadcast-service:
-    image: houssameli/broadcast-app:v1.0
+    image: houssameli/broadcast-app:v1.1
     container_name: contextual_broadcast_app
     restart: always
     ports:

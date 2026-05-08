@@ -7,8 +7,9 @@ import { config } from '../config/index.ts';
 import { Logger } from '../domain/interfaces/logger.ts';
 import { UserRepository } from '../domain/interfaces/user_repository.ts';
 import { PresenceTracker } from '../domain/interfaces/presence_tracker.ts';
+import { TestRouter } from './http/test_router.ts';
 
-interface AppDependencies {
+export interface AppDependencies {
     userRepository: UserRepository;
     presenceTracker: PresenceTracker;
     logger: Logger;
@@ -26,6 +27,15 @@ export class App {
         });
 
         new SocketServer(this.io, deps).init();
+
+        // --- TEST DISCOVERY ENDPOINT ---
+        if (config.server.env === "dev") {
+            const testRouter = new TestRouter(deps);
+            this.httpServer.on("request", (req, res) => {
+                testRouter.handleRequest(req, res);
+            });
+            deps.logger.info("Test Backdrop activated");
+        }
     }
 
     public listen() {

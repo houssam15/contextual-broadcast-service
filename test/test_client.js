@@ -15,7 +15,11 @@ socket.on("connect", () => {
 });
 
 socket.on("user_online", (data) => {
-    console.log("📢 Broadcast:", data);
+    console.log("📢 Broadcast online:", data);
+});
+
+socket.on("user_offline", (data) => {
+    console.log("📢 Broadcast offline:", data);
 });
 
 socket.on("connect_error", (err) => {

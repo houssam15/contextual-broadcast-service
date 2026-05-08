@@ -2,7 +2,9 @@ import dotenv from 'dotenv';
 
 //If DB_HOST isn't set, we are likely running locally without Docker
 if (!process.env.DB_HOST) {
-    dotenv.config();
+    dotenv.config({
+        path: process.env.NODE_ENV === "prod" ? ".env" : ".env.dev"
+    });
 }
 
 export const config = {

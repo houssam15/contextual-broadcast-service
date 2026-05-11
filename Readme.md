@@ -13,7 +13,9 @@ This service handles real-time data broadcasting with contextual awareness, util
 * **Containerized:** Multi-container setup managed via Docker Compose.
 * **Dual-Database Strategy:** MySQL for relational data and Redis for real-time presence tracking.
 * **Strategy Pattern:** Dynamic relationship discovery for different user roles (Teacher, Student, Parent).
-
+* **Event-Driven Architecture:** Decoupled internal communication using a central EventBus.
+* **Universal Internal Bridge:** A secure, authenticated HTTP-to-WebSocket bridge for external triggers (PHP, Cron jobs, Python).
+* **System Observability:** Global event logging via an intercepted Event Bus middleware.
 ---
 
 ## 🏗 Architecture
@@ -23,6 +25,33 @@ The project follows a layered architecture to ensure maintainability and testabi
 1. **Domain:** Core entities and repository interfaces (Strategy pattern implementation).
 2. **Application:** Use cases that orchestrate the business logic (e.g., `ConnectUser`).
 3. **Infrastructure:** External implementations (Database, Real-time server, Test Router).
+
+---
+
+## 🔌 System Integration (Internal Bridge)
+
+The service provides a secure endpoint for external systems (like PHP/Laravel/Cron) to trigger real-time notifications.
+
+**Endpoint:** `POST /api/internal/trigger`  
+**Header:** `X-Internal-Trigger-Secret: <your_secret>`
+
+**Payload Example:**
+```json
+{
+    "rooms": ["user_101", "admin_group"],
+    "event": "TASK_SENT",
+    "data": {
+        "title": "New Task Assigned",
+        "priority": "high"
+    }
+}
+```
+
+---
+
+## 🔍 Observability & Logging
+
+The service includes a **Global Event Interceptor** built into the `EventBus`. Every internal event is automatically logged with its payload details, providing a transparent audit trail of all system communications in the console.
 
 ---
 

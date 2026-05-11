@@ -8,11 +8,14 @@ import { Logger } from '../domain/interfaces/logger.ts';
 import { UserRepository } from '../domain/interfaces/user_repository.ts';
 import { PresenceTracker } from '../domain/interfaces/presence_tracker.ts';
 import { TestRouter } from './http/test_router.ts';
+import { InternalTriggerRouter } from './http/internal_trigger_router.ts';
+import { EventBus } from './events/event_bus.ts';
 
 export interface AppDependencies {
     userRepository: UserRepository;
     presenceTracker: PresenceTracker;
     logger: Logger;
+    eventBus: EventBus;
 }
 
 export class App {
@@ -26,16 +29,22 @@ export class App {
             cors: { origin: "*", methods: ["GET", "POST"] }
         });
 
-        new SocketServer(this.io, deps).init();
+        const sockerServer = new SocketServer(this.io, deps).init();
 
-        // --- TEST DISCOVERY ENDPOINT ---
-        if (config.server.env === "dev") {
-            const testRouter = new TestRouter(deps);
-            this.httpServer.on("request", (req, res) => {
-                testRouter.handleRequest(req, res);
-            });
-            deps.logger.info("Test Backdrop activated");
-        }
+        // --- HTTP REQUEST HANDLER ---
+        this.httpServer.on("request", (req, res) => {
+            // --- TEST DISCOVERY ENDPOINT ---
+            if (config.server.env === "dev") {
+                new TestRouter(deps).handleRequest(req, res);
+                deps.logger.info("Test Backdrop activated");
+            }
+            // --- INTERNAL TRIGGER ENDPOINT ---
+            if (config.internalTrigger.enabled) {
+                new InternalTriggerRouter(deps,sockerServer).handleRequest(req, res);
+                deps.logger.info("Internal Trigger activated");
+            }
+        });
+
     }
 
     public listen() {

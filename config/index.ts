@@ -35,5 +35,10 @@ export const config = {
             database: process.env.DB_NAME,
             connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || "10")
         }
+    },
+    internalTrigger: {
+        enabled: process.env.INTERNAL_TRIGGER_ENABLED === "true",
+        secret: process.env.INTERNAL_TRIGGER_SECRET || "default_secret",
+        endpoint: "/api/internal/trigger"
     }
 };

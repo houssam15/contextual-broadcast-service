@@ -4,6 +4,8 @@ import { connectUserUseCase } from "../../application/use_cases/connect_user.ts"
 import { Logger } from "../../domain/interfaces/logger.ts";
 import { disconnectUserUseCase } from "../../application/use_cases/disconnect_user.ts";
 import { AppDependencies } from "../app.ts";
+import { InternalNotificationEvent } from "../../domain/events/internal_notification_event.ts";
+import { EventNames } from "../../domain/events/event_types.ts";
 
 export class SocketServer {
     io: any;
@@ -20,7 +22,7 @@ export class SocketServer {
         })
     }
 
-    init(){
+    init(): SocketServer{
         this.io.on("connection", async (socket: any) => {
             try{
                 const userId = String(socket.handshake.auth.userId);
@@ -51,6 +53,13 @@ export class SocketServer {
                 socket.disconnect();
             }
         });
+
+        this.deps.eventBus.on(EventNames.INTERNAL_NOTIFICATION, (payload: InternalNotificationEvent) => {
+            this.deps.logger.info(`SocketServer caught event: ${payload.event}`);
+            this.broadcastToRooms(payload.rooms, payload.event, payload.data);
+        });
+        
+        return this;
     }
     
 }

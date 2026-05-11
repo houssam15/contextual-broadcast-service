@@ -1,13 +1,12 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { AppDependencies } from "../app.ts";
+import { BaseRouter } from "./base_router.ts";
 
-export class TestRouter {
-    constructor(private deps: AppDependencies) {}
+export class TestRouter extends BaseRouter{
+    constructor(private deps: AppDependencies) {
+        super();
+    }
 
-    /**
-     * Attempts to handle a request. 
-     * Returns true if it handled the request, false otherwise.
-     */
     public async handleRequest(req: IncomingMessage, res: ServerResponse): Promise<boolean> {
         const isGetPair = req.url === "/api/test/pair" && req.method === "GET";
 
@@ -32,14 +31,4 @@ export class TestRouter {
         return true;
     }
 
-    private sendJson(res: ServerResponse, status: number, data: any) {
-        res.writeHead(status, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(data));
-    }
-
-    private sendError(res: ServerResponse, status: number, message: string) {
-        res.writeHead(status, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: message }));
-        return true; 
-    }
 }

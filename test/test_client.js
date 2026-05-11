@@ -25,3 +25,7 @@ socket.on("user_offline", (data) => {
 socket.on("connect_error", (err) => {
     console.error("❌ Connection Error:", err.message);
 });
+
+socket.on("test_internal_trigger", (data) => {
+    console.log("Internal trigger data:", data);
+});

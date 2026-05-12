@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contextual Broadcast Service | Strategy Pattern Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a; --bg-secondary: #151b2e; --bg-card: #1a2137;
+            --border-color: #2a3447; --text-primary: #e4e7eb; --text-secondary: #9ca3af;
+            --accent-teacher: #10b981; --accent-student: #3b82f6; --accent-parent: #a855f7;
+            --accent-admin: #f43f5e; --accent-strategy: #f59e0b; --accent-danger: #ef4444;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-primary); color: var(--text-primary); padding: 2rem; line-height: 1.6; overflow-x: hidden; }
+
+        header { text-align: center; margin-bottom: 4rem; padding-top: 2rem; }
+        h1 { background: linear-gradient(90deg, var(--accent-teacher), var(--accent-student), var(--accent-parent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3rem; margin-bottom: 10px; font-weight: 700; }
+        
+        /* Layout & Sections */
+        .scenario-container { max-width: 1100px; margin: 0 auto 5rem auto; }
+        .scenario-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 3rem; box-shadow: var(--shadow); }
+        .scenario-box h2 { color: var(--accent-strategy); margin-bottom: 2rem; font-size: 1.8rem; text-align: center; }
+        .scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+        .scenario-item h4 { color: var(--text-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+
+        .divider { text-align: center; margin-bottom: 4rem; position: relative; }
+        .divider::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: var(--border-color); z-index: -1; }
+        .divider span { background: var(--bg-primary); padding: 0 20px; color: var(--accent-strategy); font-family: 'JetBrains Mono'; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; }
+
+        .demo-container { max-width: 1300px; margin: 0 auto 5rem auto; }
+        .layout-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; }
+        .section-title { text-align: center; margin-bottom: 1.5rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+
+        /* UI Components */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem; position: relative; transition: 0.3s; box-shadow: var(--shadow); }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; background: #2a3447; color: white; transition: 0.3s; font-family: 'Outfit'; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        .btn.online { background: var(--accent-danger); }
+        .btn.emergency { background: var(--accent-admin); margin-top: 10px; }
+        
+        .feed { background: var(--bg-secondary); height: 150px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; padding: 10px; border-radius: 8px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .log { margin-bottom: 6px; padding: 6px 10px; border-radius: 4px; animation: fadeIn 0.4s ease forwards; font-size: 0.7rem; border-left: 2px solid transparent; }
+
+        .pulse { position: absolute; top: 15px; right: 15px; width: 12px; height: 12px; border-radius: 50%; opacity: 0; z-index: 10; }
+        .pulsing { animation: pulseAnim 1.2s ease-out; }
+
+        /* SCALABILITY MATRIX & DISPATCH ANIMATION */
+        .grid-container { max-width: 1300px; margin: 5rem auto; padding: 3rem; background: #0f172a; border-radius: 24px; border: 1px solid var(--border-color); display: grid; grid-template-columns: 2fr 1fr; gap: 30px; position: relative; }
+        .user-matrix { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; position: relative; z-index: 2; }
+        .user-node { aspect-ratio: 1/1; background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        
+        .user-node.active-subject { border-color: var(--accent-student); background: rgba(59,130,246,0.15); box-shadow: 0 0 25px rgba(59,130,246,0.3); transform: scale(1.05); }
+        .user-node.active-observer { border-color: var(--accent-teacher); background: rgba(16, 185, 129, 0.15); z-index: 3; }
+        .user-node.ignored { opacity: 0.15; filter: grayscale(1); }
+
+        /* Dispatch Signal Effect */
+        .signal-wave { position: absolute; border: 2px solid var(--accent-student); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: wave 0.8s ease-out forwards; z-index: 1; }
+        
+        .data-packet { position: absolute; width: 8px; height: 8px; background: var(--accent-teacher); border-radius: 50%; box-shadow: 0 0 10px var(--accent-teacher); pointer-events: none; z-index: 10; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; }
+
+        .matrix-info-panel { background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border-color); height: 480px; display: flex; flex-direction: column; }
+        .trace-log { font-family: 'JetBrains Mono'; font-size: 0.75rem; color: var(--accent-strategy); overflow-y: auto; flex-grow: 1; }
+        .trace-line { margin-bottom: 8px; border-left: 2px solid rgba(245, 158, 11, 0.3); padding-left: 10px; animation: fadeIn 0.3s ease forwards; }
+
+        @keyframes wave { from { width: 0; height: 0; opacity: 1; } to { width: 500px; height: 500px; opacity: 0; } }
+        @keyframes pulseAnim { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(4); opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        
+        @media (max-width: 1000px) { .grid-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Broadcasting Architecture</h1>
+        <p style="color: var(--text-secondary); font-size: 1.2rem;">Real-time presence distribution engine</p>
+    </header>
+
+    <div class="divider"><span>1. Functional Components</span></div>
+
+    <main class="demo-container">
+        <div class="layout-grid">
+            <div id="students-basic"><h3 class="section-title">Students</h3></div>
+            <div id="teachers-basic"><h3 class="section-title">Teachers</h3></div>
+            <div id="parents-basic"><h3 class="section-title">Parents</h3></div>
+        </div>
+    </main>
+
+    <div class="divider"><span>2. Emergency Broadcast Strategy</span></div>
+
+    <section class="demo-container">
+        <div style="background: rgba(244, 63, 94, 0.05); border: 1px dashed var(--accent-admin); border-radius: 20px; padding: 2rem;">
+            <div class="layout-grid">
+                <div class="card student-card">
+                    <div style="margin-bottom:10px;">🎓 <strong>Campus Cluster</strong></div>
+                    <button class="btn emergency" onclick="triggerEmergency()">🚨 Trigger Lockdown</button>
+                </div>
+                <div class="card admin-card">
+                    <div class="pulse" id="pulse-admin"></div>
+                    <div style="margin-bottom:10px;">🛡️ <strong>Admin Socket</strong></div>
+                    <div class="feed" id="feed-admin"></div>
+                </div>
+                <div class="card parent-card">
+                    <div class="pulse" id="pulse-parent-all"></div>
+                    <div style="margin-bottom:10px;">🏠 <strong>Parental Relay</strong></div>
+                    <div class="feed" id="feed-parent-all"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"><span>3. Scalability Matrix (Event Dispatching)</span></div>
+
+    <section class="grid-container" id="matrixContainer">
+        <div>
+            <h3 style="color: var(--accent-strategy); margin-bottom: 1rem;">Interaction Grid (15 Nodes)</h3>
+            <div class="user-matrix" id="matrixGrid"></div>
+        </div>
+        <div class="matrix-info-panel">
+            <h4 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">📡 Strategy Pattern Trace</h4>
+            <div class="trace-log" id="traceLog">
+                <div class="trace-line" style="color: var(--text-secondary); border: none;">// Waiting for event trigger...</div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const db = {
+            students: [
+                { id: 10, name: "Alex", links: { teacher: 'A', parent: 1 } },
+                { id: 11, name: "Jordan", links: { teacher: 'A', parent: 2 } }
+            ],
+            teachers: [{ id: 'A', name: "Prof. Smith", class: "Room 101" }],
+            parents: [{ id: 1, name: "Alex's Mom" }, { id: 2, name: "Jordan's Dad" }],
+            nodes: Array.from({ length: 15 }, (_, i) => ({ 
+                id: i+1, 
+                group: (i % 4) + 1,
+                ip: `10.0.0.${100 + i}`
+            }))
+        };
+
+        function init() {
+            // Render Basic Demo
+            const sCol = document.getElementById('students-basic');
+            db.students.forEach(s => {
+                sCol.innerHTML += `<div class="card student-card" id="s-${s.id}">
+                    <div style="margin-bottom:10px;">🎓 <strong>${s.name}</strong></div>
+                    <button class="btn" onclick="toggleStudent(${s.id})">Connect</button>
+                </div>`;
+            });
+            const tCol = document.getElementById('teachers-basic');
+            db.teachers.forEach(t => {
+                tCol.innerHTML += `<div class="card teacher-card"><div class="pulse" id="p-t-${t.id}"></div><div style="margin-bottom:10px;">👨‍🏫 <strong>${t.name}</strong></div><div class="feed" id="f-t-${t.id}"></div></div>`;
+            });
+            const pCol = document.getElementById('parents-basic');
+            db.parents.forEach(p => {
+                pCol.innerHTML += `<div class="card parent-card"><div class="pulse" id="p-p-${p.id}"></div><div style="margin-bottom:10px;">🏠 <strong>${p.name}</strong></div><div class="feed" id="f-p-${p.id}"></div></div>`;
+            });
+
+            // Render Matrix
+            const matrixGrid = document.getElementById('matrixGrid');
+            db.nodes.forEach(node => {
+                const div = document.createElement('div');
+                div.className = 'user-node';
+                div.id = `m-node-${node.id}`;
+                div.innerHTML = `<div style="font-size:1.1rem">👤</div><div style="font-size:0.6rem; margin-top:4px;">ID_${node.id}</div><div style="font-size:0.5rem; color:var(--accent-strategy); font-weight:bold; margin-top:2px;">G${node.group}</div>`;
+                div.onclick = (e) => handleMatrix(node, e);
+                matrixGrid.appendChild(div);
+            });
+        }
+
+        function handleMatrix(sel, e) {
+            const trace = document.getElementById('traceLog');
+            trace.innerHTML = ""; 
+            
+            // 1. Trigger Wave Animation
+            const rect = document.getElementById('matrixGrid').getBoundingClientRect();
+            const wave = document.createElement('div');
+            wave.className = 'signal-wave';
+            wave.style.left = `${e.clientX - rect.left}px`;
+            wave.style.top = `${e.clientY - rect.top}px`;
+            document.getElementById('matrixGrid').appendChild(wave);
+            setTimeout(() => wave.remove(), 800);
+
+            // 2. Log logic
+            addTrace(`[Input] Socket.emit from Node_${sel.id}`, "var(--accent-student)");
+            addTrace(`[Context] Scoped to Group_0${sel.group}`, "var(--accent-strategy)");
+
+            // 3. Update States & Animate Packets
+            const sourceNode = document.getElementById(`m-node-${sel.id}`);
+            const sourceRect = sourceNode.getBoundingClientRect();
+
+            document.querySelectorAll('.user-node').forEach(n => n.classList.remove('active-subject', 'active-observer', 'ignored'));
+            sourceNode.classList.add('active-subject');
+            
+            db.nodes.forEach(n => {
+                if(n.id === sel.id) return;
+                const targetNode = document.getElementById(`m-node-${n.id}`);
+                
+                if(n.group === sel.group) {
+                    targetNode.classList.add('active-observer');
+                    createPacket(sourceRect, targetNode.getBoundingClientRect());
+                    addTrace(` -> Dispatching packet to Node_${n.id}...`, "var(--accent-teacher)");
+                } else {
+                    targetNode.classList.add('ignored');
+                }
+            });
+        }
+
+        function createPacket(startRect, endRect) {
+            const container = document.getElementById('matrixContainer');
+            const cRect = container.getBoundingClientRect();
+            
+            const packet = document.createElement('div');
+            packet.className = 'data-packet';
+            
+            // Set start pos relative to container
+            const startX = (startRect.left + startRect.width/2) - cRect.left;
+            const startY = (startRect.top + startRect.height/2) - cRect.top;
+            const endX = (endRect.left + endRect.width/2) - cRect.left;
+            const endY = (endRect.top + endRect.height/2) - cRect.top;
+
+            packet.style.left = `${startX}px`;
+            packet.style.top = `${startY}px`;
+            container.appendChild(packet);
+
+            // Animate
+            requestAnimationFrame(() => {
+                packet.style.opacity = "1";
+                packet.style.left = `${endX}px`;
+                packet.style.top = `${endY}px`;
+            });
+
+            setTimeout(() => packet.remove(), 700);
+        }
+
+        function addTrace(text, color) {
+            const trace = document.getElementById('traceLog');
+            const div = document.createElement('div');
+            div.className = 'trace-line';
+            div.style.color = color;
+            div.innerText = text;
+            trace.appendChild(div);
+            trace.scrollTop = trace.scrollHeight;
+        }
+
+        // --- Core Demo Logic ---
+        function toggleStudent(id) {
+            const s = db.students.find(x => x.id === id);
+            const btn = document.querySelector(`#s-${id} .btn`);
+            const isOnline = btn.innerText === "CONNECT";
+            btn.innerText = isOnline ? "DISCONNECT" : "CONNECT";
+            btn.classList.toggle('online', isOnline);
+            const color = isOnline ? "var(--accent-teacher)" : "var(--accent-danger)";
+            log(document.getElementById(`f-t-${s.links.teacher}`), `${s.name} ${isOnline ? 'ONLINE' : 'OFFLINE'}`, color);
+            triggerPulse(`p-t-${s.links.teacher}`, color);
+            log(document.getElementById(`f-p-${s.links.parent}`), `Child ${s.name} ${isOnline ? 'ONLINE' : 'OFFLINE'}`, color);
+            triggerPulse(`p-p-${s.links.parent}`, color);
+        }
+
+        function triggerEmergency() {
+            log(document.getElementById('feed-admin'), "SECURITY BREACH DETECTED", "var(--accent-admin)");
+            triggerPulse('pulse-admin', "var(--accent-admin)");
+            setTimeout(() => {
+                log(document.getElementById('feed-parent-all'), "Campus Lockdown in progress", "var(--accent-admin)");
+                triggerPulse('pulse-parent-all', "var(--accent-admin)");
+            }, 300);
+        }
+
+        function log(el, msg, color) {
+            const d = document.createElement('div');
+            d.className = 'log'; d.style.color = color; d.style.borderLeft = `2px solid ${color}`;
+            d.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            el.prepend(d);
+        }
+
+        function triggerPulse(id, color) {
+            const el = document.getElementById(id);
+            el.style.background = color; el.classList.remove('pulsing');
+            void el.offsetWidth; el.classList.add('pulsing');
+        }
+
+        init();
+    </script>
+</body>
+</html>

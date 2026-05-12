@@ -7,7 +7,9 @@ A high-performance, real-time messaging service built with **Node.js**, **TypeSc
 This service handles real-time data broadcasting with contextual awareness, utilizing **Redis** for high-speed caching/presence management and **MySQL** for persistent data storage. It is designed to be integrated into larger ecosystems (like school management or chat platforms).
 
 ### 🎮 Live Demo
-**[Click here to view the Interactive Architecture Demo](https://houssam15.github.io/contextual-broadcast-service/)**
+
+<a href="https://houssam15.github.io/contextual-broadcast-service/" target="_blank">**Click here to view the Interactive Architecture Demo**</a>
+
 *Experience the Strategy Pattern and Real-time Dispatching visually before diving into the code.*
 
 ### Key Features

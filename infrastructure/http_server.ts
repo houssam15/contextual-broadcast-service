@@ -1,9 +1,10 @@
 // infrastructure/http_server.ts
-import { createServer as createHttpServer, Server as HttpServer } from "http";
-import { createServer as createHttpsServer, Server as HttpsServer } from "https";
-import { readFileSync } from "fs";
-import { config } from "../config/index.ts";
-import { Logger } from "../domain/interfaces/logger.ts";
+const { hmRequire } = require("../config/hm_require.ts");
+const { createServer: createHttpServer, Server: HttpServer } = hmRequire("http");
+const { createServer: createHttpsServer, Server: HttpsServer } = hmRequire("https");
+const { readFileSync } = hmRequire("fs");
+const { config } = require("../config/index");
+import type { Logger } from "../domain/interfaces/logger";
 
 export function createBaseServer(logger: Logger): HttpServer | HttpsServer {
     if (config.https.useHttps) {

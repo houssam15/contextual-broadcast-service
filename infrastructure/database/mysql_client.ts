@@ -1,5 +1,6 @@
-import mysql from 'mysql2/promise';
-import {config} from "../../config/index.ts";
+const { hmRequire } = require("../../config/hm_require.ts");
+const mysql = hmRequire('mysql2/promise');
+const { config } = require("../../config/index.ts");
 
 const pool = mysql.createPool({
   host: config.db.mySql.host,
@@ -11,7 +12,7 @@ const pool = mysql.createPool({
   connectionLimit: config.db.mySql.connectionLimit,
   queueLimit: 0,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0
+  keepAliveInitialDelay: 10000
 });
 
 export default pool;

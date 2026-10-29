@@ -1,17 +1,27 @@
-import { Logger } from "../../domain/interfaces/logger.ts";
+import type { Logger } from "../../../domain/interfaces/logger";
 import type { Pool, RowDataPacket } from 'mysql2/promise';
-import { UserRoleStrategy } from "../../domain/interfaces/user_role_strategy.ts";
-import { TestableUserRepository } from "../../domain/interfaces/testable_user_repository.ts";
+import type { UserRoleStrategy } from "../../../domain/interfaces/user_role_strategy.ts";
+import type { TestableUserRepository } from "../../../domain/interfaces/testable_user_repository";
 
-export class MySqlUserRepository implements TestableUserRepository {
+export class SchoolMySqlUserRepository implements TestableUserRepository {
     private db: Pool;
     logger: Logger;
     private strategies: UserRoleStrategy[];
 
     constructor(db: Pool, logger: Logger, strategies: UserRoleStrategy[]){
-      this.db = db;
+
+    const actualDb = (db as any)?.default || db;
+
+      if (!actualDb || typeof actualDb.execute !== 'function') {
+        console.error("[SchoolMySqlUserRepository] Received invalid DB instance:", db);
+        throw new Error("[SchoolMySqlUserRepository] Invalid MySQL pool passed to constructor. 'execute' method is missing.");
+      }
+      this.db = actualDb;
       this.logger = logger;
       this.strategies = strategies;
+    }
+    getTeamById(teamId: number): Promise<any[]> {
+        throw new Error("Method not implemented.");
     }
 
     async findById(id: string): Promise<any> {
@@ -19,7 +29,7 @@ export class MySqlUserRepository implements TestableUserRepository {
         return rows.length > 0 ? rows[0] : null;
     }
 
-    async getRelatedUserIds(userId: string): Promise<string[]> {
+    async getRelatedUserIds(userId: string): Promise<RoomMappingPayload[]> {
         const user = await this.findById(userId);
         if (!user) {
           this.logger.error(`User with ID ${userId} not found`);

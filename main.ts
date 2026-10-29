@@ -1,5 +1,5 @@
-import { App } from './infrastructure/app.ts';
-import { container } from './infrastructure/container.ts';
+const { App } = require('./infrastructure/app');
+const { container } = require('./infrastructure/container');
 
 ["uncaughtException", "unhandledRejection"].forEach((event) => {
     process.on(event, (err) => container.logger.error(`Fatal ${event}:`, err));

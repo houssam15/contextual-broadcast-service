@@ -4,3 +4,4 @@
 .env.prod
 node_modules/
 dist/
+docs/data/schema.sql

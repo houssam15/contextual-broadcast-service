@@ -1,8 +1,8 @@
-import { UserRoleStrategy } from "../../domain/interfaces/user_role_strategy.ts";
-import {Pool,RowDataPacket} from 'mysql2/promise';
-import { Logger } from "../../domain/interfaces/logger";
+import type { UserRoleStrategy } from "../../../domain/interfaces/user_role_strategy.ts";
+import type {Pool,RowDataPacket} from 'mysql2/promise';
+import type { Logger } from "../../../domain/interfaces/logger";
 
-export class StudentStrategy implements UserRoleStrategy {
+export class SchoolStudentStrategy implements UserRoleStrategy {
     private db: Pool;
     private logger: Logger;
 
@@ -15,6 +15,10 @@ export class StudentStrategy implements UserRoleStrategy {
         return role === "student";
     }
 
+    supportsV2(data: any): boolean {
+        return data.role === "student";
+    }
+    
     async getRelatedIds(userId: string): Promise<string[]> {
       const relatedIds: Set<string> = new Set();
       
@@ -22,7 +26,7 @@ export class StudentStrategy implements UserRoleStrategy {
         'SELECT teacher_id, parent_id FROM users WHERE id = ?',
         [userId]
       );
-
+        
       const data = rows[0];
 
       if (data) {

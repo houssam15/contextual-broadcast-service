@@ -1,6 +1,7 @@
 // infrastructure/events/event_bus.ts
-import { EventEmitter } from "events";
-import { Logger } from "../../domain/interfaces/logger";
+const { hmRequire } = require("../../config/hm_require.ts");
+const { EventEmitter } = hmRequire("events");
+import type { Logger } from "../../domain/interfaces/logger";
 
 export class EventBus extends EventEmitter {
     constructor(private logger: Logger) {

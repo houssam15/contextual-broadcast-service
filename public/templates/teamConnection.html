@@ -1,0 +1,46 @@
+<div id="teamConnection-main-template">
+    <div class="chat-app-root">
+        <div class="chat-list-header">
+            <span class="chat-list-title">Conversations</span>
+            <button type="button" class="chat-list-toggle">
+                <i class="fa-solid fa-chevron-down toggle-icon"></i>
+            </button>
+        </div>
+        <div class="chat-list-filters">
+            <div class="chat-search-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" class="chat-search-input" placeholder="Search conversations...">
+                <button type="button" class="chat-search-clear is-hidden">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chat-list-x">
+            <div class="chat-list-teams">
+                <div class="chat-list-teams-header"><span class="section-title">Teams</span></div>
+                <div class="chat-list-teams-content"></div>
+            </div>
+            <div class="chat-list-friends">
+                <div class="chat-list-friends-header"><span class="section-title">Friends</span></div>
+                <div class="chat-list-friends-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="teamConnection-item-template">
+    <div class="chat-list-item" data-id="" data-type="">
+        <div class="chat-item-avatar-wrapper">
+            <img src="" alt="Avatar" class="chat-item-avatar is-hidden">
+            <div class="chat-item-avatar-placeholder"></div>
+            <span class="chat-item-status-badge offline"></span>
+        </div>
+        <div class="chat-item-info">
+            <span class="chat-item-name"></span>
+            <span class="chat-item-subtitle"></span>
+        </div>
+        <button type="button" class="btn btn-sm btn-light open-chat chat-item-action-btn">
+            <i class="fa-regular fa-comment-dots"></i>
+        </button>
+    </div>
+</div>

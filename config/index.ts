@@ -1,13 +1,21 @@
-import dotenv from 'dotenv';
+import path from 'node:path';
 
 //If DB_HOST isn't set, we are likely running locally without Docker
 if (!process.env.DB_HOST) {
-    dotenv.config({
-        path: process.env.NODE_ENV === "prod" ? ".env" : ".env.dev"
-    });
+    const envFile = process.env.NODE_ENV === "dev" ? ".env.dev" : ".env";
+    const envPath = path.resolve(process.cwd(), envFile);
+    try {
+        process.loadEnvFile(envPath);
+    } catch {
+        // Silently skip if file doesn't exist
+    }
 }
 
 export const config = {
+    import:{
+        node_path: process.env.NODE_PATH,
+        system_path: process.env.SYSTEM_PATH,
+    },
     server: {
         port: parseInt(process.env.PORT || "3000"),
         env: process.env.NODE_ENV || "development"
@@ -33,7 +41,14 @@ export const config = {
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
-            connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || "10")
+            connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || "10"),
+            tables:{
+                userUserTable: process.env.DB_USERS_USERS_TABLE,
+                teamUsersTable: process.env.DB_TEAM_USERS_TABLE,
+                teamsTable: process.env.DB_TEAMS_TABLE,
+                usersTable: process.env.DB_USERS_TABLE,
+                userConnectionLogTable: process.env.DB_USER_CONNECTION_LOG_TABLE
+            }
         }
     },
     internalTrigger: {

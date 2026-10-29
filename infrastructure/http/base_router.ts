@@ -1,4 +1,5 @@
-import { ServerResponse } from "http";
+const { hmRequire } = require("../../config/hm_require.ts");
+const { ServerResponse } = hmRequire("http");
 
 export class BaseRouter {
 

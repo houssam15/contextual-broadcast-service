@@ -1,6 +1,7 @@
-import { IncomingMessage, ServerResponse } from "http";
-import { AppDependencies } from "../app.ts";
-import { BaseRouter } from "./base_router.ts";
+const { hmRequire } = require("../../config/hm_require");
+const { IncomingMessage, ServerResponse } = hmRequire("http");
+import type { AppDependencies } from "../app";
+const { BaseRouter } = require("./base_router");
 
 export class TestRouter extends BaseRouter{
     constructor(private deps: AppDependencies) {

@@ -1,6 +1,9 @@
-import Redis from 'ioredis';
-import { Logger } from '../../domain/interfaces/logger.js';
-import {config} from "../../config/index.ts";
+const { hmRequire } = require("../../config/hm_require.ts");
+const RedisConstructor = hmRequire('ioredis');
+const { config } = require("../../config/index.ts");
+
+import type { Logger } from '../../domain/interfaces/logger';
+import type Redis from 'ioredis';
 
 export class RedisClient {
   private client: Redis;
@@ -11,7 +14,7 @@ export class RedisClient {
   }
 
   private initializeClient(): Redis {
-    return new Redis({
+    return new RedisConstructor({
       port: config.redis.port,  
       host: config.redis.host,
       password: config.redis.password,

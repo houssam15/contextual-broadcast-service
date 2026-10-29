@@ -1,4 +1,4 @@
-import { Logger } from "../../domain/interfaces/logger.ts";
+import type { Logger } from "../../domain/interfaces/logger";
 
 export class ConsoleLogger implements Logger {
   info(message: string, context?: any): void {
@@ -11,7 +11,7 @@ export class ConsoleLogger implements Logger {
 
   debug(message: string, data?: any): void {
     // Only log if we are in development mode
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.LOG_LEVEL === 'debug') {
       console.debug(`[DEBUG] ${message}`, data || '');
     }
   }

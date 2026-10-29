@@ -1,9 +1,10 @@
-import { IncomingMessage, ServerResponse } from "http";
-import { AppDependencies } from "../app.ts";
-import { BaseRouter } from "./base_router.ts";
-import { config } from "../../config/index.ts";
-import { SocketServer } from "../realtime/socket_service.ts";
-import { EventNames } from "../../domain/events/event_types.ts";
+const { hmRequire } = require("../../config/hm_require.ts");
+const { IncomingMessage, ServerResponse } = hmRequire("http");
+import type { AppDependencies } from "../app";
+const { BaseRouter } = require("./base_router");
+const { config } = require("../../config/index");
+const { SocketServer } = require("../realtime/socket_service");
+const { EventNames } = require("../../domain/events/event_types");
 
 export class InternalTriggerRouter extends BaseRouter{
 
